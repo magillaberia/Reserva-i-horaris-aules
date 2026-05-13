@@ -3,44 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserves Aules - EHT Cambrils</title>
+    <title>EHT Cambrils - Gestió de Reserves</title>
     <style>
-        :root { --taronja: #FF8C00; --blanc: #ffffff; --gris: #f4f4f4; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gris); color: #333; padding-bottom: 50px; }
-        header { background: var(--blanc); border-bottom: 5px solid var(--taronja); padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-        .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        h3 { color: var(--taronja); margin-top: 0; border-bottom: 2px solid var(--gris); padding-bottom: 10px; }
+        :root { --taronja: #FF8C00; --blanc: #ffffff; --gris: #f4f4f4; --text: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--gris); color: var(--text); padding-bottom: 50px; }
         
-        /* Formulari */
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
-        button#btnReservar { background: var(--taronja); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        header { 
+            background: var(--blanc); 
+            border-bottom: 5px solid var(--taronja); 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container { max-width: 950px; margin: 20px auto; padding: 0 15px; }
+        
+        .panel { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            margin-bottom: 25px; 
+        }
+
+        h3 { color: var(--taronja); margin-top: 0; border-bottom: 2px solid var(--gris); padding-bottom: 10px; }
+
+        /* Formulari Grid */
+        .grid-form { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 20px;
+        }
+
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
+        
+        input, select, button { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box; 
+            font-size: 1rem; 
+        }
+
+        button#btnReservar { 
+            background: var(--taronja); 
+            color: white; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: background 0.3s ease;
+            font-size: 1.1rem;
+        }
+
         button#btnReservar:hover { background: #e67e00; }
 
-        /* Taula */
+        /* Estils de la Taula */
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: var(--taronja); color: white; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        th { background: var(--taronja); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
         .prof { background: #ffe5d0; color: var(--taronja); }
         .alumne { background: #e0f0ff; color: #007bff; }
-        .btn-del { background: #ff4d4d; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+
+        .btn-del { 
+            background: #ff4d4d; 
+            color: white; 
+            border: none; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .aula-header { background: #fff8f0; border: 2px solid var(--taronja); }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="https://www.ehtcambrils.cat/wp-content/uploads/2021/05/logo-eht-cambrils.png" alt="Logo" style="height: 50px;">
-    <h2 style="margin: 5px 0;">Gestió de Reserves d'Aules</h2>
+    <img src="https://www.ehtcambrils.cat/wp-content/uploads/2021/05/logo-eht-cambrils.png" alt="Logo EHT Cambrils" style="height: 60px; margin-bottom: 10px;">
+    <h2 style="margin:0;">Sistema de Reserves d'Aules</h2>
 </header>
 
 <div class="container">
-    <div class="panel">
-        <label for="aulaActiva">🏢 Selecciona l'espai a gestionar:</label>
-        <select id="aulaActiva" style="font-weight: bold; border-color: var(--taronja);">
+    <div class="panel aula-header">
+        <label style="font-size: 1.1rem;">🏢 Selecciona l'espai que vols consultar o reservar:</label>
+        <select id="aulaActiva" style="font-size: 1.1rem; border-color: var(--taronja); color: var(--taronja); font-weight: bold;">
             <option value="estudi">Aula d'Estudi / Saleta Reunions</option>
             <option value="tecnologica">Aula Tecnològica</option>
             <option value="magna">Aula Magna</option>
@@ -52,14 +104,14 @@
         <h3>Nova Reserva</h3>
         <div class="grid-form">
             <div>
-                <label>Nom i Cognom</label>
-                <input type="text" id="nom" placeholder="Ex: Joan Garcia">
+                <label>Nom complet</label>
+                <input type="text" id="nom" placeholder="Ex: Marc Sala">
             </div>
             <div>
                 <label>Perfil</label>
                 <select id="rol">
-                    <option value="Alumne">Alumne (Estudi)</option>
-                    <option value="Professor">Professor (Reunió)</option>
+                    <option value="Alumne">Alumne</option>
+                    <option value="Professor">Professor (Bloqueja aula)</option>
                 </select>
             </div>
             <div>
@@ -69,9 +121,13 @@
             <div>
                 <label>Durada</label>
                 <select id="durada">
+                    <option value="15">15 minuts</option>
                     <option value="30">30 minuts</option>
+                    <option value="45">45 minuts</option>
                     <option value="60" selected>1 hora</option>
+                    <option value="90">1 h 30 min</option>
                     <option value="120">2 hores</option>
+                    <option value="180">3 hores</option>
                 </select>
             </div>
             <div>
@@ -79,23 +135,24 @@
                 <input type="number" id="persones" min="1" max="6" value="1">
             </div>
         </div>
-        <button id="btnReservar">Verificar i Confirmar Reserva</button>
+        <button id="btnReservar">Verificar disponibilitat i Confirmar</button>
     </div>
 
     <div class="panel">
-        <h3>Calendari de l'Aula Seleccionada</h3>
+        <h3>Horari de reserves - <span id="nomAulaActual" style="color: var(--taronja);">Aula d'Estudi</span></h3>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Inici</th>
+                        <th>Data i Hora</th>
                         <th>Usuari</th>
                         <th>Perfil</th>
-                        <th>Pers.</th>
+                        <th>Persones</th>
                         <th>Acció</th>
                     </tr>
                 </thead>
-                <tbody id="taulaReserves"></tbody>
+                <tbody id="taulaReserves">
+                    </tbody>
             </table>
         </div>
     </div>
@@ -105,6 +162,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // LA TEVA CONFIGURACIÓ
     const firebaseConfig = {
       apiKey: "AIzaSyA15QYnYR6Ze0ITIUba-2BKTxMmMr2_JcU",
       authDomain: "aula-cambrils-9ce8a.firebaseapp.com",
@@ -119,7 +177,7 @@
     const colRef = collection(db, "reserves_v3");
     const LIMIT_AFORAMENT = 6;
 
-    // --- LOGICA DE RESERVA ---
+    // --- ACCIÓ DE RESERVAR ---
     document.getElementById('btnReservar').onclick = async () => {
         const nom = document.getElementById('nom').value.trim();
         const rol = document.getElementById('rol').value;
@@ -128,52 +186,65 @@
         const personesNoves = parseInt(document.getElementById('persones').value);
         const aula = document.getElementById('aulaActiva').value;
 
-        if(!nom || !dataVal) return alert("Si us plau, omple tots els camps.");
+        if(!nom || !dataVal || isNaN(personesNoves)) {
+            alert("Si us plau, omple tots els camps correctament.");
+            return;
+        }
 
         const iniciNou = new Date(dataVal).getTime();
         const finalNou = iniciNou + (duradaMinuts * 60000);
 
         try {
+            // Obtenim reserves per validar solapaments
             const snapshot = await getDocs(query(colRef, where("aula", "==", aula)));
-            let ocupatPerProfessor = false;
             let totalPersonesEnFranja = 0;
+            let hiHaProfessor = false;
 
             snapshot.forEach((doc) => {
                 const r = doc.data();
                 const iniciEx = r.inici;
                 const finalEx = iniciEx + (r.durada * 60000);
 
-                // Comprovar si les franges se solapen
+                // Comprovar solapament temporal
                 if (iniciNou < finalEx && finalNou > iniciEx) {
-                    if (r.rol === 'Professor') ocupatPerProfessor = true;
+                    if (r.rol === 'Professor') hiHaProfessor = true;
                     totalPersonesEnFranja += parseInt(r.persones || 0);
                 }
             });
 
-            // Validacions
+            // Lògica d'aforament i perfils
             if (rol === 'Professor' && totalPersonesEnFranja > 0) {
-                return alert("No es pot reservar: l'aula ja té alumnes en aquesta franja.");
+                alert("⚠️ Error: L'aula ja té alumnes reservats en aquesta franja.");
+                return;
             }
-            if (rol === 'Alumne' && (ocupatPerProfessor || (totalPersonesEnFranja + personesNoves) > LIMIT_AFORAMENT)) {
-                return alert("Aula ocupada per Professor o aforament complet (Límit 6).");
+            if (rol === 'Alumne' && (hiHaProfessor || (totalPersonesEnFranja + personesNoves) > LIMIT_AFORAMENT)) {
+                alert(`⚠️ Error: Aula bloquejada per Professor o límit d'aforament de 6 persones superat.`);
+                return;
             }
 
+            // Guardar si tot és correcte
             await addDoc(colRef, {
                 nom, rol, aula, durada: duradaMinuts, persones: personesNoves,
                 inici: iniciNou, timestamp: Date.now()
             });
-            alert("Reserva confirmada!");
+            
+            alert("✅ Reserva confirmada correctament.");
             document.getElementById('nom').value = "";
-        } catch (e) { alert("Error: " + e.message); }
+        } catch (e) {
+            alert("Error de Firebase: " + e.message);
+        }
     };
 
-    // --- ACTUALITZACIÓ EN TEMPS REAL ---
-    const selector = document.getElementById('aulaActiva');
+    // --- ESCULTA TEMPS REAL AMB FILTRE ---
+    const selectorAula = document.getElementById('aulaActiva');
+    const nomAulaTitol = document.getElementById('nomAulaActual');
     let unsub;
 
-    function carregarAula() {
-        if (unsub) unsub(); // Cancel·lar subscripció anterior
-        const aula = selector.value;
+    function actualitzarPantalla() {
+        if (unsub) unsub();
+        const aula = selectorAula.value;
+        nomAulaTitol.innerText = selectorAula.options[selectorAula.selectedIndex].text;
+
         const q = query(colRef, where("aula", "==", aula), orderBy("inici", "asc"));
 
         unsub = onSnapshot(q, (snapshot) => {
@@ -182,29 +253,39 @@
             snapshot.forEach((docSnap) => {
                 const r = docSnap.data();
                 const id = docSnap.id;
-                const dataStr = new Date(r.inici).toLocaleString('ca-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+                const dataText = new Date(r.inici).toLocaleString('ca-ES', {
+                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                    <td>${dataStr}</td>
+                    <td>${dataText}</td>
                     <td>${r.nom}</td>
                     <td><span class="badge ${r.rol === 'Professor' ? 'prof' : 'alumne'}">${r.rol}</span></td>
-                    <td>${r.persones}</td>
-                    <td><button class="btn-del" onclick="eliminarReserva('${id}', '${r.nom}')">X</button></td>
+                    <td>${r.persones} / ${LIMIT_AFORAMENT}</td>
+                    <td><button class="btn-del" onclick="eliminarReserva('${id}', '${r.nom}')">Esborrar</button></td>
                 `;
                 tbody.appendChild(fila);
             });
+        }, (error) => {
+            console.error(error);
+            if(error.message.includes("FAILED_PRECONDITION")) {
+                alert("⚠️ Cal activar l'Índex a Firebase. Mira la consola (F12) i clica l'enllaç.");
+            }
         });
     }
 
-    selector.onchange = carregarAula;
-    carregarAula(); // Càrrega inicial
+    selectorAula.onchange = actualitzarPantalla;
+    actualitzarPantalla();
 
-    // --- ELIMINAR ---
+    // --- FUNCIÓ ELIMINAR ---
     window.eliminarReserva = async (id, propietari) => {
-        const pass = prompt("Introdueix el teu nom o el CODI ADMIN per esborrar:");
+        const pass = prompt("Escriu el teu nom o el codi ADMIN per esborrar:");
         if (pass === "CAMBRILS2024" || pass === propietari) {
             await deleteDoc(doc(db, "reserves_v3", id));
-        } else { alert("No autoritzat."); }
+        } else {
+            alert("No autoritzat.");
+        }
     };
 </script>
 </body>
