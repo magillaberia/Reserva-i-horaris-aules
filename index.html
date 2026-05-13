@@ -3,41 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestió Aules - EHT Cambrils</title>
+    <title>Gestió Aules EHT Cambrils</title>
     <style>
         :root { --taronja: #FF8C00; --blanc: #ffffff; --gris: #f4f4f4; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gris); }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gris); padding-bottom: 50px; }
         header { background: var(--blanc); border-bottom: 5px solid var(--taronja); padding: 15px; text-align: center; }
         .container { max-width: 900px; margin: 20px auto; padding: 15px; }
-        
         .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Disseny Taula */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
         th { background-color: var(--taronja); color: white; }
-        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        
-        input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
-        button#btnReservar { background: var(--taronja); color: white; font-weight: bold; border: none; cursor: pointer; font-size: 1.1rem; }
-        
-        .aula-selector { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
-        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-        .badge-prof { background: #ffe5d0; color: var(--taronja); }
-        .badge-alumne { background: #e0f0ff; color: #007bff; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button#btnReservar { background: var(--taronja); color: white; font-weight: bold; border: none; cursor: pointer; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .prof { background: #ffe5d0; color: var(--taronja); }
+        .alumne { background: #e0f0ff; color: #007bff; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="https://www.ehtcambrils.cat/wp-content/uploads/2021/05/logo-eht-cambrils.png" alt="Logo" style="height: 50px;">
-    <h2>Sistema de Reserves Multifunció</h2>
+    <h2>EHT CAMBRILS - Reserves</h2>
 </header>
 
 <div class="container">
     <div class="panel">
-        <label class="aula-selector">Selecciona l'Aula:</label>
-        <select id="aulaActiva" onchange="canviarAula()">
+        <label>Selecciona l'Aula:</label>
+        <select id="aulaActiva">
             <option value="estudi">Aula d'Estudi / Saleta Reunions</option>
             <option value="tecnologica">Aula Tecnològica</option>
             <option value="magna">Aula Magna</option>
@@ -46,7 +38,7 @@
     </div>
 
     <div class="panel">
-        <h3>Nova Reserva per a: <span id="nomAulaTitol" style="color:var(--taronja)">Aula d'Estudi</span></h3>
+        <h3>Nova Reserva</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <input type="text" id="nom" placeholder="El teu nom" required>
             <select id="rol">
@@ -57,34 +49,32 @@
             <select id="durada">
                 <option value="30">30 minuts</option>
                 <option value="60" selected>1 hora</option>
-                <option value="90">1 h 30 min</option>
                 <option value="120">2 hores</option>
             </select>
         </div>
-        <button id="btnReservar">Verificar i Reservar</button>
+        <button id="btnReservar">Confirmar Reserva</button>
     </div>
 
     <div class="panel">
         <h3>Calendari de Reserves</h3>
-        <table>
+        <table id="taulaCompleta">
             <thead>
                 <tr>
-                    <th>Data i Hora</th>
+                    <th>Data</th>
                     <th>Usuari</th>
                     <th>Tipus</th>
-                    <th>Durada</th>
+                    <th>Aula</th>
                     <th>Acció</th>
                 </tr>
             </thead>
-            <tbody id="taulaReserves">
-                </tbody>
+            <tbody id="taulaReserves"></tbody>
         </table>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA15QYnYR6Ze0ITIUba-2BKTxMmMr2_JcU",
@@ -97,97 +87,63 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let reservesActuals = [];
+    const colRef = collection(db, "reserves_v3");
 
-    // Funció per canviar de títol segons l'aula
-    window.canviarAula = () => {
-        const selector = document.getElementById('aulaActiva');
-        document.getElementById('nomAulaTitol').innerText = selector.options[selector.selectedIndex].text;
-        carregarDades();
-    };
-
-    // RESERVAR AMB LÒGICA DE SOLAPAMENT
+    // FUNCIÓ PER RESERVAR
     document.getElementById('btnReservar').onclick = async () => {
         const nom = document.getElementById('nom').value;
         const rol = document.getElementById('rol').value;
-        const inici = new Date(document.getElementById('dataHora').value).getTime();
+        const dataVal = document.getElementById('dataHora').value;
         const durada = parseInt(document.getElementById('durada').value);
         const aula = document.getElementById('aulaActiva').value;
-        const final = inici + (durada * 60000);
 
-        if(!nom || isNaN(inici)) return alert("Falten dades");
+        if(!nom || !dataVal) return alert("Omple el nom i la data");
 
-        // Lògica de solapament
-        const coincidencies = reservesActuals.filter(r => {
-            const rFinal = r.inici + (r.durada * 60000);
-            return (inici < rFinal && final > r.inici);
-        });
-
-        const hi haProfessor = coincidencies.some(r => r.rol === 'Professor');
-        
-        if (rol === 'Professor' && coincidencies.length > 0) {
-            alert("No pots reservar com a Professor: l'aula ja està ocupada en aquesta franja.");
-            return;
-        }
-        if (hi haProfessor) {
-            alert("Aula bloquejada per una reunió de Professorat.");
-            return;
-        }
-        if (rol === 'Alumne' && coincidencies.length >= 5) {
-            alert("Aforament d'alumnes complet (Màxim 5).");
-            return;
-        }
-
-        await addDoc(collection(db, "reserves_v3"), {
-            nom, rol, inici, durada, aula, idUsuari: nom // Fem servir el nom com a ID senzill
-        });
-        alert("Reserva confirmada!");
-    };
-
-    // ESCULTA EN TEMPS REAL
-    function carregarDades() {
-        const aula = document.getElementById('aulaActiva').value;
-        const q = query(collection(db, "reserves_v3"), where("aula", "==", aula), orderBy("inici", "asc"));
-        
-        onSnapshot(q, (snapshot) => {
-            const tbody = document.getElementById('taulaReserves');
-            tbody.innerHTML = "";
-            reservesActuals = [];
-
-            snapshot.forEach((docSnap) => {
-                const r = docSnap.data();
-                r.id = docSnap.id;
-                reservesActuals.push(r);
-
-                const fila = document.createElement('tr');
-                const dataStr = new Date(r.inici).toLocaleString('ca-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
-                
-                fila.innerHTML = `
-                    <td>${dataStr}</td>
-                    <td>${r.nom}</td>
-                    <td><span class="status-badge ${r.rol === 'Professor' ? 'badge-prof' : 'badge-alumne'}">${r.rol}</span></td>
-                    <td>${r.durada} min</td>
-                    <td><button class="btn-delete" onclick="eliminarReserva('${r.id}', '${r.nom}')">Esborrar</button></td>
-                `;
-                tbody.appendChild(fila);
+        try {
+            await addDoc(colRef, {
+                nom, rol, aula, durada,
+                inici: new Date(dataVal).getTime(),
+                timestamp: Date.now()
             });
-        });
-    }
-
-    // ELIMINAR RESERVA
-    window.eliminarReserva = async (id, propietari) => {
-        const esAdmin = prompt("Introdueix el codi d'administrador o el teu nom per esborrar:");
-        
-        // Codi d'admin és "CAMBRILS2024" (pots canviar-lo)
-        if (esAdmin === "CAMBRILS2024" || esAdmin === propietari) {
-            await deleteDoc(doc(db, "reserves_v3", id));
-            alert("Reserva eliminada.");
-        } else {
-            alert("No tens permís per esborrar aquesta reserva.");
+            alert("Reserva guardada!");
+            document.getElementById('nom').value = "";
+        } catch (error) {
+            console.error(error);
+            alert("Error de Firebase: " + error.message);
         }
     };
 
-    carregarDades();
+    // LLEGIR EN TEMPS REAL
+    const q = query(colRef, orderBy("inici", "asc"));
+    onSnapshot(q, (snapshot) => {
+        const tbody = document.getElementById('taulaReserves');
+        tbody.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const r = docSnap.data();
+            const id = docSnap.id;
+            const fila = document.createElement('tr');
+            const dataStr = new Date(r.inici).toLocaleString('ca-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+            
+            fila.innerHTML = `
+                <td>${dataStr}</td>
+                <td>${r.nom}</td>
+                <td><span class="badge ${r.rol === 'Professor' ? 'prof' : 'alumne'}">${r.rol}</span></td>
+                <td>${r.aula}</td>
+                <td><button onclick="eliminar('${id}', '${r.nom}')" style="background:red; color:white; border:none; padding:5px; cursor:pointer; border-radius:4px;">X</button></td>
+            `;
+            tbody.appendChild(fila);
+        });
+    });
+
+    // FUNCIÓ ELIMINAR
+    window.eliminar = async (id, propietari) => {
+        const pass = prompt("Escriu el teu nom o el codi ADMIN per esborrar:");
+        if(pass === "CAMBRILS2024" || pass === propietari) {
+            await deleteDoc(doc(db, "reserves_v3", id));
+        } else {
+            alert("No autoritzat");
+        }
+    };
 </script>
 </body>
 </html>
