@@ -3,96 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EHT Cambrils - Gestió de Reserves</title>
+    <title>EHT Cambrils - Gestió Avançada</title>
     <style>
         :root { --taronja: #FF8C00; --blanc: #ffffff; --gris: #f4f4f4; --text: #333; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--gris); color: var(--text); padding-bottom: 50px; }
-        
-        header { 
-            background: var(--blanc); 
-            border-bottom: 5px solid var(--taronja); 
-            padding: 20px; 
-            text-align: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .container { max-width: 950px; margin: 20px auto; padding: 0 15px; }
-        
-        .panel { 
-            background: white; 
-            padding: 25px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            margin-bottom: 25px; 
-        }
-
+        header { background: var(--blanc); border-bottom: 5px solid var(--taronja); padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .panel { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
         h3 { color: var(--taronja); margin-top: 0; border-bottom: 2px solid var(--gris); padding-bottom: 10px; }
-
-        /* Formulari Grid */
-        .grid-form { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 20px;
-        }
-
-        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
         
-        input, select, button { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 8px; 
-            border: 1px solid #ddd; 
-            box-sizing: border-box; 
-            font-size: 1rem; 
-        }
-
-        button#btnReservar { 
-            background: var(--taronja); 
-            color: white; 
-            border: none; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: background 0.3s ease;
-            font-size: 1.1rem;
-        }
-
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.85rem; color: #555; }
+        input, select, button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 0.95rem; }
+        
+        button#btnReservar { background: var(--taronja); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; padding: 15px; }
         button#btnReservar:hover { background: #e67e00; }
 
-        /* Estils de la Taula */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: var(--taronja); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
+        /* Controls de la Taula */
+        .table-header-tools { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
+        .filter-group { display: flex; align-items: center; gap: 10px; }
+
+        .table-container { overflow-x: auto; background: white; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { background: #f8f9fa; color: #666; padding: 12px; text-align: left; border-bottom: 2px solid var(--taronja); font-size: 0.85rem; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover { background-color: #fffcf9; }
         
-        .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
         .prof { background: #ffe5d0; color: var(--taronja); }
         .alumne { background: #e0f0ff; color: #007bff; }
-
-        .btn-del { 
-            background: #ff4d4d; 
-            color: white; 
-            border: none; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .aula-header { background: #fff8f0; border: 2px solid var(--taronja); }
+        .btn-del { background: #ffefef; color: #ff4d4d; border: 1px solid #ff4d4d; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+        .btn-del:hover { background: #ff4d4d; color: white; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="https://www.ehtcambrils.cat/wp-content/uploads/2021/05/logo-eht-cambrils.png" alt="Logo EHT Cambrils" style="height: 60px; margin-bottom: 10px;">
-    <h2 style="margin:0;">Sistema de Reserves d'Aules</h2>
+    <img src="https://www.ehtcambrils.cat/wp-content/uploads/2021/05/logo-eht-cambrils.png" alt="Logo" style="height: 50px;">
+    <h2>Reserves Cronològiques Aules</h2>
 </header>
 
 <div class="container">
-    <div class="panel aula-header">
-        <label style="font-size: 1.1rem;">🏢 Selecciona l'espai que vols consultar o reservar:</label>
-        <select id="aulaActiva" style="font-size: 1.1rem; border-color: var(--taronja); color: var(--taronja); font-weight: bold;">
+    <div class="panel" style="border-left: 8px solid var(--taronja);">
+        <label>📍 Aula actual:</label>
+        <select id="aulaActiva" style="font-weight: bold; font-size: 1.2rem;">
             <option value="estudi">Aula d'Estudi / Saleta Reunions</option>
             <option value="tecnologica">Aula Tecnològica</option>
             <option value="magna">Aula Magna</option>
@@ -103,56 +57,43 @@
     <div class="panel">
         <h3>Nova Reserva</h3>
         <div class="grid-form">
-            <div>
-                <label>Nom complet</label>
-                <input type="text" id="nom" placeholder="Ex: Marc Sala">
-            </div>
-            <div>
-                <label>Perfil</label>
-                <select id="rol">
-                    <option value="Alumne">Alumne</option>
-                    <option value="Professor">Professor (Bloqueja aula)</option>
-                </select>
-            </div>
-            <div>
-                <label>Data i Hora d'Inici</label>
-                <input type="datetime-local" id="dataHora">
-            </div>
-            <div>
-                <label>Durada</label>
-                <select id="durada">
-                    <option value="15">15 minuts</option>
-                    <option value="30">30 minuts</option>
-                    <option value="45">45 minuts</option>
-                    <option value="60" selected>1 hora</option>
-                    <option value="90">1 h 30 min</option>
-                    <option value="120">2 hores</option>
-                    <option value="180">3 hores</option>
-                </select>
-            </div>
-            <div>
-                <label>Persones (Màx. 6)</label>
-                <input type="number" id="persones" min="1" max="6" value="1">
-            </div>
+            <div><label>Nom</label><input type="text" id="nom" placeholder="Nom"></div>
+            <div><label>Perfil</label><select id="rol"><option value="Alumne">Alumne</option><option value="Professor">Professor</option></select></div>
+            <div><label>Data/Hora</label><input type="datetime-local" id="dataHora"></div>
+            <div><label>Durada</label><select id="durada">
+                <option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hora</option>
+                <option value="120">2 hores</option></select></div>
+            <div><label>Pers.</label><input type="number" id="persones" value="1" min="1" max="6"></div>
         </div>
-        <button id="btnReservar">Verificar disponibilitat i Confirmar</button>
+        <button id="btnReservar">Confirmar Reserva</button>
     </div>
 
     <div class="panel">
-        <h3>Horari de reserves - <span id="nomAulaActual" style="color: var(--taronja);">Aula d'Estudi</span></h3>
+        <div class="table-header-tools">
+            <h3>Calendari Cronològic</h3>
+            <div class="filter-group">
+                <label>Filtrar per:</label>
+                <select id="filtreTemps" style="width: auto;">
+                    <option value="totes">Totes les reserves</option>
+                    <option value="avui">Només Avui</option>
+                    <option value="properes">Properes (Futur)</option>
+                </select>
+            </div>
+        </div>
+        
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Data i Hora</th>
-                        <th>Usuari</th>
-                        <th>Perfil</th>
-                        <th>Persones</th>
-                        <th>Acció</th>
+                        <th>⏰ Hora Inici</th>
+                        <th>⌛ Durada</th>
+                        <th>👤 Usuari</th>
+                        <th>🏷️ Perfil</th>
+                        <th>👥 Pers.</th>
+                        <th>⚙️ Accions</th>
                     </tr>
                 </thead>
-                <tbody id="taulaReserves">
-                    </tbody>
+                <tbody id="taulaReserves"></tbody>
             </table>
         </div>
     </div>
@@ -162,7 +103,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // LA TEVA CONFIGURACIÓ
     const firebaseConfig = {
       apiKey: "AIzaSyA15QYnYR6Ze0ITIUba-2BKTxMmMr2_JcU",
       authDomain: "aula-cambrils-9ce8a.firebaseapp.com",
@@ -175,117 +115,88 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const colRef = collection(db, "reserves_v3");
-    const LIMIT_AFORAMENT = 6;
 
-    // --- ACCIÓ DE RESERVAR ---
+    // Lògica de Reserva (Mantenim el control d'aforament anterior)
     document.getElementById('btnReservar').onclick = async () => {
         const nom = document.getElementById('nom').value.trim();
         const rol = document.getElementById('rol').value;
         const dataVal = document.getElementById('dataHora').value;
-        const duradaMinuts = parseInt(document.getElementById('durada').value);
-        const personesNoves = parseInt(document.getElementById('persones').value);
+        const durada = parseInt(document.getElementById('durada').value);
+        const persones = parseInt(document.getElementById('persones').value);
         const aula = document.getElementById('aulaActiva').value;
 
-        if(!nom || !dataVal || isNaN(personesNoves)) {
-            alert("Si us plau, omple tots els camps correctament.");
-            return;
+        if(!nom || !dataVal) return alert("Omple els camps");
+
+        const inici = new Date(dataVal).getTime();
+        const final = inici + (durada * 60000);
+
+        const snap = await getDocs(query(colRef, where("aula", "==", aula)));
+        let total = 0; let prof = false;
+        snap.forEach(d => {
+            const r = d.data();
+            if (inici < (r.inici + r.durada*60000) && final > r.inici) {
+                if (r.rol === 'Professor') prof = true;
+                total += r.persones;
+            }
+        });
+
+        if ((rol === 'Alumne' && (prof || total + persones > 6)) || (rol === 'Professor' && total > 0)) {
+            return alert("Aula ocupada o límit superat");
         }
 
-        const iniciNou = new Date(dataVal).getTime();
-        const finalNou = iniciNou + (duradaMinuts * 60000);
-
-        try {
-            // Obtenim reserves per validar solapaments
-            const snapshot = await getDocs(query(colRef, where("aula", "==", aula)));
-            let totalPersonesEnFranja = 0;
-            let hiHaProfessor = false;
-
-            snapshot.forEach((doc) => {
-                const r = doc.data();
-                const iniciEx = r.inici;
-                const finalEx = iniciEx + (r.durada * 60000);
-
-                // Comprovar solapament temporal
-                if (iniciNou < finalEx && finalNou > iniciEx) {
-                    if (r.rol === 'Professor') hiHaProfessor = true;
-                    totalPersonesEnFranja += parseInt(r.persones || 0);
-                }
-            });
-
-            // Lògica d'aforament i perfils
-            if (rol === 'Professor' && totalPersonesEnFranja > 0) {
-                alert("⚠️ Error: L'aula ja té alumnes reservats en aquesta franja.");
-                return;
-            }
-            if (rol === 'Alumne' && (hiHaProfessor || (totalPersonesEnFranja + personesNoves) > LIMIT_AFORAMENT)) {
-                alert(`⚠️ Error: Aula bloquejada per Professor o límit d'aforament de 6 persones superat.`);
-                return;
-            }
-
-            // Guardar si tot és correcte
-            await addDoc(colRef, {
-                nom, rol, aula, durada: duradaMinuts, persones: personesNoves,
-                inici: iniciNou, timestamp: Date.now()
-            });
-            
-            alert("✅ Reserva confirmada correctament.");
-            document.getElementById('nom').value = "";
-        } catch (e) {
-            alert("Error de Firebase: " + e.message);
-        }
+        await addDoc(colRef, { nom, rol, aula, durada, persones, inici, timestamp: Date.now() });
+        alert("Guardat!");
     };
 
-    // --- ESCULTA TEMPS REAL AMB FILTRE ---
+    // MOTOR DE RENDERITZAT CRONOLÒGIC
     const selectorAula = document.getElementById('aulaActiva');
-    const nomAulaTitol = document.getElementById('nomAulaActual');
+    const selectorFiltre = document.getElementById('filtreTemps');
     let unsub;
 
-    function actualitzarPantalla() {
+    function renderTaula() {
         if (unsub) unsub();
-        const aula = selectorAula.value;
-        nomAulaTitol.innerText = selectorAula.options[selectorAula.selectedIndex].text;
+        const aulaActual = selectorAula.value;
+        const filtreActual = selectorFiltre.value;
 
-        const q = query(colRef, where("aula", "==", aula), orderBy("inici", "asc"));
+        // Query ordenada cronològicament (Requereix l'índex de Firebase!)
+        const q = query(colRef, where("aula", "==", aulaActual), orderBy("inici", "asc"));
 
         unsub = onSnapshot(q, (snapshot) => {
             const tbody = document.getElementById('taulaReserves');
             tbody.innerHTML = "";
+            const ara = Date.now();
+            const avuiInici = new Date().setHours(0,0,0,0);
+            const avuiFinal = new Date().setHours(23,59,59,999);
+
             snapshot.forEach((docSnap) => {
                 const r = docSnap.data();
-                const id = docSnap.id;
-                const dataText = new Date(r.inici).toLocaleString('ca-ES', {
-                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-                });
                 
+                // Aplicar filtres de temps al navegador
+                if (filtreActual === "avui" && (r.inici < avuiInici || r.inici > avuiFinal)) return;
+                if (filtreActual === "properes" && r.inici < ara) return;
+
+                const d = new Date(r.inici);
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                    <td>${dataText}</td>
+                    <td><strong>${d.toLocaleDateString('ca-ES')}</strong> - ${d.toLocaleTimeString('ca-ES', {hour:'2-digit', minute:'2-digit'})}</td>
+                    <td>${r.durada} min</td>
                     <td>${r.nom}</td>
-                    <td><span class="badge ${r.rol === 'Professor' ? 'prof' : 'alumne'}">${r.rol}</span></td>
-                    <td>${r.persones} / ${LIMIT_AFORAMENT}</td>
-                    <td><button class="btn-del" onclick="eliminarReserva('${id}', '${r.nom}')">Esborrar</button></td>
+                    <td><span class="badge ${r.rol==='Professor'?'prof':'alumne'}">${r.rol}</span></td>
+                    <td>${r.persones}/6</td>
+                    <td><button class="btn-del" onclick="eliminar('${docSnap.id}', '${r.nom}')">Esborrar</button></td>
                 `;
                 tbody.appendChild(fila);
             });
-        }, (error) => {
-            console.error(error);
-            if(error.message.includes("FAILED_PRECONDITION")) {
-                alert("⚠️ Cal activar l'Índex a Firebase. Mira la consola (F12) i clica l'enllaç.");
-            }
         });
     }
 
-    selectorAula.onchange = actualitzarPantalla;
-    actualitzarPantalla();
+    selectorAula.onchange = renderTaula;
+    selectorFiltre.onchange = renderTaula;
+    renderTaula();
 
-    // --- FUNCIÓ ELIMINAR ---
-    window.eliminarReserva = async (id, propietari) => {
-        const pass = prompt("Escriu el teu nom o el codi ADMIN per esborrar:");
-        if (pass === "CAMBRILS2024" || pass === propietari) {
-            await deleteDoc(doc(db, "reserves_v3", id));
-        } else {
-            alert("No autoritzat.");
-        }
+    window.eliminar = async (id, prop) => {
+        const p = prompt("Nom per esborrar:");
+        if (p === "CAMBRILS2024" || p === prop) await deleteDoc(doc(db, "reserves_v3", id));
     };
 </script>
 </body>
