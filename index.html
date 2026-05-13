@@ -3,113 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EHT Cambrils - Reserva en Temps Real</title>
+    <title>Reserva Aula - EHT Cambrils</title>
     <style>
         :root { --taronja: #FF8C00; --blanc: #ffffff; --gris: #f4f4f4; }
-        body { font-family: sans-serif; background: var(--gris); margin: 0; padding: 0; }
-        header { background: var(--blanc); padding: 20px; border-bottom: 5px solid var(--taronja); text-align: center; }
-        .container { max-width: 600px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .status-box { padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
-        .lliure { background: #d4edda; color: #155724; }
-        .ocupat { background: #f8d7da; color: #721c24; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; }
-        button { background: var(--taronja); color: white; border: none; cursor: pointer; font-weight: bold; }
-        .reserva { border-left: 4px solid var(--taronja); padding: 10px; margin: 10px 0; background: #fafafa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--gris); }
+        
+        header { 
+            background-color: var(--blanc); 
+            border-bottom: 5px solid var(--taronja); 
+            padding: 15px; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container { max-width: 500px; margin: 20px auto; padding: 15px; }
+
+        /* Targeta d'estat actual */
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        .lliure { background-color: #d4edda; color: #155724; }
+        .ocupat { background-color: #f8d7da; color: #721c24; }
+
+        /* Formulari de reserva */
+        .form-reserva {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h2, h3 { color: var(--taronja); margin-top: 0; }
+        
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px; /* Evita zoom automàtic en iPhone */
+        }
+
+        button {
+            background-color: var(--taronja);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Llista visual de l'horari */
+        .reserva-item {
+            background: white;
+            margin-top: 10px;
+            padding: 15px;
+            border-left: 5px solid var(--taronja);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-rol { font-size: 0.8rem; font-weight: bold; color: #666; }
+        .professor { color: var(--taronja); }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>EHT CAMBRILS</h1>
-    <p>Aula d'Estudi / Saleta de Reunions</p>
+    <div style="font-size: 1.5rem; font-weight: bold; color: var(--taronja);">EHT CAMBRILS</div>
+    <div style="font-size: 0.9rem; color: #555;">Aula d'Estudi / Saleta de Reunions</div>
 </header>
 
 <div class="container">
-    <div id="estatAula" class="status-box lliure">Carregant estat...</div>
+    <div class="status-card">
+        <div id="textEstat">Comprovant aula...</div>
+        <div id="badgeEstat" class="badge">Carregant</div>
+    </div>
 
-    <form id="reservaForm">
-        <h3>Fer una reserva</h3>
-        <input type="text" id="usuari" placeholder="El teu nom" required>
+    <div class="form-reserva">
+        <h3>Nova Reserva</h3>
+        <input type="text" id="nom" placeholder="Nom i Cognom" required>
         <select id="rol">
-            <option value="Alumne">Soc Alumne (Estudi)</option>
-            <option value="Professor">Soc Professor (Reunió)</option>
+            <option value="Alumne">Alumne (Aula d'estudi)</option>
+            <option value="Professor">Professor (Reunió)</option>
         </select>
         <input type="datetime-local" id="dataHora" required>
-        <input type="number" id="durada" placeholder="Durada (minuts)" value="60">
-        <button type="submit">Reservar Ara</button>
-    </form>
+        <button id="btnReservar">Confirmar Reserva</button>
+    </div>
 
-    <hr>
-    <h3>Horari de reserves</h3>
+    <h3 style="margin-top: 30px;">Pròximes hores</h3>
     <div id="llistaReserves"></div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // Importem el que necessitem de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // TODO: Substitueix això amb la teva configuració de Firebase
-  const firebaseConfig = {
-    apiKey: "LA_TEVA_API_KEY",
-    authDomain: "EL_TEU_PROJECTE.firebaseapp.com",
-    projectId: "EL_TEU_PROJECTE",
-    storageBucket: "EL_TEU_PROJECTE.appspot.com",
-    messagingSenderId: "ID",
-    appId: "ID_APP"
-  };
+    // Les teves claus de configuració
+    const firebaseConfig = {
+      apiKey: "AIzaSyA15QYnYR6Ze0ITIUba-2BKTxMmMr2_JcU",
+      authDomain: "aula-cambrils-9ce8a.firebaseapp.com",
+      projectId: "aula-cambrils-9ce8a",
+      storageBucket: "aula-cambrils-9ce8a.firebasestorage.app",
+      messagingSenderId: "949766108403",
+      appId: "1:949766108403:web:c47aeb962ff1342fbcf386",
+      measurementId: "G-FKRQTF8GJS"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const colRef = collection(db, "reserves");
+    // Inicialitzem l'App i la Base de Dades
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const colRef = collection(db, "reserves");
 
-  // 1. ESCRIURE DADES (Quan algú clica el botó)
-  const form = document.getElementById('reservaForm');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await addDoc(colRef, {
-      nom: document.getElementById('usuari').value,
-      rol: document.getElementById('rol').value,
-      inici: new Date(document.getElementById('dataHora').value).getTime(),
-      durada: parseInt(document.getElementById('durada').value),
-      timestamp: Date.now()
+    // ACCIÓ: Reservar
+    document.getElementById('btnReservar').onclick = async () => {
+        const nom = document.getElementById('nom').value;
+        const rol = document.getElementById('rol').value;
+        const dataInici = document.getElementById('dataHora').value;
+
+        if(!nom || !dataInici) {
+            alert("Si us plau, omple el teu nom i la data.");
+            return;
+        }
+
+        try {
+            await addDoc(colRef, {
+                nom: nom,
+                rol: rol,
+                inici: new Date(dataInici).getTime(),
+                creatA: Date.now()
+            });
+            alert("Reserva realitzada correctament!");
+            document.getElementById('nom').value = "";
+        } catch (e) {
+            alert("Error al reservar: " + e.message);
+        }
+    };
+
+    // ACCIÓ: Escolta en temps real
+    const q = query(colRef, orderBy("inici", "asc"));
+    
+    onSnapshot(q, (snapshot) => {
+        const llista = document.getElementById('llistaReserves');
+        const badge = document.getElementById('badgeEstat');
+        const textEstat = document.getElementById('textEstat');
+        
+        llista.innerHTML = "";
+        const ara = Date.now();
+        let ocupadaAra = false;
+
+        snapshot.forEach((doc) => {
+            const r = doc.data();
+            const inici = r.inici;
+            const final = inici + (60 * 60 * 1000); // 1 hora de durada per defecte
+
+            // Comprovem si està passant ARA
+            if (ara >= inici && ara <= final) {
+                ocupadaAra = true;
+                textEstat.innerText = "L'aula està sent utilitzada per:";
+                badge.innerText = `${r.nom} (${r.rol})`;
+                badge.className = "badge ocupat";
+            }
+
+            // Afegir a la llista d'horaris (només si no ha passat fa més d'una hora)
+            if (final > ara) {
+                const item = document.createElement('div');
+                item.className = "reserva-item";
+                const dataFormatada = new Date(inici).toLocaleString('ca-ES', {
+                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                
+                item.innerHTML = `
+                    <div>
+                        <strong>${dataFormatada}</strong><br>
+                        <span>${r.nom}</span>
+                    </div>
+                    <div class="info-rol ${r.rol === 'Professor' ? 'professor' : ''}">${r.rol.toUpperCase()}</div>
+                `;
+                llista.appendChild(item);
+            }
+        });
+
+        if (!ocupatAra) {
+            textEstat.innerText = "L'aula està disponible ara mateix";
+            badge.innerText = "Desocupada";
+            badge.className = "badge lliure";
+        }
     });
-    form.reset();
-  });
-
-  // 2. LLEGIR DADES EN TEMPS REAL (Sincronitza tots els dispositius automàticament)
-  const q = query(colRef, orderBy("inici", "asc"));
-  onSnapshot(q, (snapshot) => {
-    const llista = document.getElementById('llistaReserves');
-    const estatDiv = document.getElementById('estatAula');
-    let html = "";
-    let aulaOcupada = false;
-    const ara = Date.now();
-
-    snapshot.docs.forEach(doc => {
-      const r = doc.data();
-      const final = r.inici + (r.durada * 60000);
-      const dataText = new Date(r.inici).toLocaleString('ca-ES');
-
-      // Comprovar si l'aula està ocupada ARA mateix
-      if (ara >= r.inici && ara <= final) {
-        aulaOcupada = true;
-        estatDiv.innerText = `OCUPADA per ${r.nom} (${r.rol})`;
-        estatDiv.className = "status-box ocupat";
-      }
-
-      // Afegir a la llista visual
-      html += `<div class="reserva">
-                <strong>${dataText}</strong><br>
-                ${r.nom} (${r.rol}) - ${r.durada} min.
-               </div>`;
-    });
-
-    if (!aulaOcupada) {
-      estatDiv.innerText = "DESOCUPADA - Disponible";
-      estatDiv.className = "status-box lliure";
-    }
-    llista.innerHTML = html;
-  });
 </script>
 
 </body>
