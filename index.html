@@ -167,5 +167,27 @@
                     <td>${r.nom}</td>
                     <td><span class="status-badge ${r.rol === 'Professor' ? 'badge-prof' : 'badge-alumne'}">${r.rol}</span></td>
                     <td>${r.durada} min</td>
-                    <td><button class="btn-delete" onclick="eliminarReserva('${r.id}', '${r.
-                                                                                          
+                    <td><button class="btn-delete" onclick="eliminarReserva('${r.id}', '${r.nom}')">Esborrar</button></td>
+                `;
+                tbody.appendChild(fila);
+            });
+        });
+    }
+
+    // ELIMINAR RESERVA
+    window.eliminarReserva = async (id, propietari) => {
+        const esAdmin = prompt("Introdueix el codi d'administrador o el teu nom per esborrar:");
+        
+        // Codi d'admin és "CAMBRILS2024" (pots canviar-lo)
+        if (esAdmin === "CAMBRILS2024" || esAdmin === propietari) {
+            await deleteDoc(doc(db, "reserves_v3", id));
+            alert("Reserva eliminada.");
+        } else {
+            alert("No tens permís per esborrar aquesta reserva.");
+        }
+    };
+
+    carregarDades();
+</script>
+</body>
+</html>
